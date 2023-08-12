@@ -9,6 +9,7 @@
 */
 
 /// A type that encapsulate the possible formatting options for diagnostics.
+@available(*, deprecated, message: "Use an instance `DiagnosticFormattingOutputStreamOptions` instead.")
 public struct DiagnosticFormattingOptions: OptionSet {
     public let rawValue: UInt
 

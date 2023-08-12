@@ -40,7 +40,10 @@ struct TransformForStaticHostingAction: Action {
         self.htmlTemplateDirectory = htmlTemplateDirectory
         self.fileManager = fileManager
         self.diagnosticEngine = diagnosticEngine
-        self.diagnosticEngine.add(DiagnosticConsoleWriter(formattingOptions: [], baseURL: documentationBundleURL))
+
+        let formatter = HumanReadableFormattingOptions(baseUrl: documentationBundleURL, dataProvider: nil)
+            .makeFormatter(LogHandle.standardError)
+        self.diagnosticEngine.add(formatter)
     }
     
     /// Converts each eligible file from the source archive and
