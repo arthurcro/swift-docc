@@ -136,12 +136,16 @@ public struct ConvertAction: Action, RecreatingContext {
             filterLevel = DiagnosticSeverity(diagnosticLevel) ?? .warning
         }
         
-        let formattingOptions: DiagnosticFormattingOptions
+        let formattingOptions: DiagnosticFormattingOutputStreamOptions
         if formatConsoleOutputForTools || diagnosticFilePath != nil {
-            formattingOptions = [.formatConsoleOutputForTools]
+            formattingOptions = ToolsFormattingOptions()
         } else {
-            formattingOptions = []
+            formattingOptions = HumanReadableFormattingOptions(
+                baseUrl: documentationBundleURL ?? URL(fileURLWithPath: fileManager.currentDirectoryPath),
+                dataProvider: dataProvider
+            )
         }
+
         self.inheritDocs = inheritDocs
         self.treatWarningsAsErrors = treatWarningsAsErrors
 
@@ -149,12 +153,8 @@ public struct ConvertAction: Action, RecreatingContext {
         
         let engine = diagnosticEngine ?? DiagnosticEngine(treatWarningsAsErrors: treatWarningsAsErrors)
         engine.filterLevel = filterLevel
-        engine.add(
-            DiagnosticConsoleWriter(
-                formattingOptions: formattingOptions,
-                baseURL: documentationBundleURL ?? URL(fileURLWithPath: fileManager.currentDirectoryPath)
-            )
-        )
+        engine.add(formattingOptions.makeFormatter(LogHandle.standardError))
+        
         if let diagnosticFilePath = diagnosticFilePath {
             engine.add(DiagnosticFileWriter(outputPath: diagnosticFilePath))
         }

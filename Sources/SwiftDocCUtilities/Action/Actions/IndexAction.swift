@@ -40,7 +40,10 @@ public struct IndexAction: Action {
         self.bundleIdentifier = bundleIdentifier
 
         self.diagnosticEngine = diagnosticEngine
-        self.diagnosticEngine.add(DiagnosticConsoleWriter(formattingOptions: [], baseURL: documentationBundleURL))
+
+        let formatter = HumanReadableFormattingOptions(baseUrl: documentationBundleURL, dataProvider: nil)
+            .makeFormatter(LogHandle.standardError)
+        self.diagnosticEngine.add(formatter)
     }
     
     /// Converts each eligable file from the source documentation bundle,
